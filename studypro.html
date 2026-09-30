@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>StudyPro — тренажёр для школьников и студентов</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f5f6fb;--card:#fff;--tx:#1d2033;--mu:#6b7090;--ac:#5b5bf0;--ok:#1fa66a;--bad:#e5484d;--bd:#e3e5f0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12131c;--card:#1c1e2c;--tx:#eceefb;--mu:#9a9fc0;--ac:#8080ff;--ok:#3ecf8e;--bad:#ff6b70;--bd:#2c2f44}}
+:root[data-theme="dark"]{--bg:#12131c;--card:#1c1e2c;--tx:#eceefb;--mu:#9a9fc0;--ac:#8080ff;--ok:#3ecf8e;--bad:#ff6b70;--bd:#2c2f44}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.45}
+header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;max-width:900px;margin:auto}
+.logo{font-weight:800;font-size:22px;cursor:pointer}.logo b{color:var(--ac)}
+nav button{margin-left:6px}main{max-width:900px;margin:auto;padding:0 18px 40px}
+h2{margin:18px 0 10px}.mu{color:var(--mu)}
+button{font:inherit;cursor:pointer;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:12px;padding:10px 16px}
+button:hover{border-color:var(--ac)}button.p{background:var(--ac);color:#fff;border-color:var(--ac)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.chip.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px}
+.sub{cursor:pointer;transition:transform .15s}.sub:hover{transform:translateY(-3px);border-color:var(--ac)}
+.sub .e{font-size:32px}.tag{font-size:12px;color:var(--mu)}
+.opt{display:block;width:100%;text-align:left;margin:8px 0}.opt.ok{background:var(--ok);color:#fff;border-color:var(--ok)}.opt.bad{background:var(--bad);color:#fff;border-color:var(--bad)}
+.bar{height:8px;background:var(--bd);border-radius:8px;overflow:hidden;margin:10px 0}.bar i{display:block;height:100%;background:var(--ac)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.flip{perspective:900px;height:220px;cursor:pointer;margin:14px 0}.fi{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.flip.f .fi{transform:rotateY(180deg)}.fc{position:absolute;inset:0;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;font-size:20px;background:var(--card);border:1px solid var(--bd);border-radius:18px}
+.fc.b{transform:rotateY(180deg);border-color:var(--ac)}
+.big{font-size:56px;font-weight:800;color:var(--ac)}
+.tm{font-weight:700}.tm.low{color:var(--bad)}
+table{width:100%;border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid var(--bd);text-align:left;font-size:14px}
+</style></head><body>
+<header><div class="logo" onclick="home()">Study<b>Pro</b></div><nav><button onclick="stats()">📊 Статистика</button><button onclick="theme()">🌓</button></nav></header>
+<main id="app"></main>
+<script>
+const S=[
+{id:'math',n:'Математика',e:'📐',l:'Школа',q:[
+['Чему равен корень из 144?',['10','11','12','14'],2,'12 × 12 = 144.'],
+['Производная функции x²?',['x','2x','x²','2'],1,'(xⁿ)′ = n·xⁿ⁻¹.'],
+['Сумма углов треугольника?',['90°','180°','270°','360°'],1,'Всегда 180° в евклидовой геометрии.'],
+['Чему равен sin 30°?',['1/2','√3/2','1','0'],0,'Табличное значение.'],
+['Решите: 2x + 6 = 14',['3','4','5','8'],1,'2x = 8, x = 4.'],
+['Площадь круга радиуса r?',['2πr','πr²','πr','2πr²'],1,'S = πr².']]},
+{id:'cs',n:'Информатика',e:'💻',l:'Школа',q:[
+['Сколько бит в байте?',['4','8','16','10'],1,'1 байт = 8 бит.'],
+['Для чего нужен HTML?',['Разметка страниц','Стили','Серверная логика','Хранение данных'],0,'HTML — язык разметки.'],
+['Двоичное 101 в десятичной системе?',['3','4','5','6'],2,'4 + 0 + 1 = 5.'],
+['Что из этого язык программирования?',['Python','HTTP','PNG','USB'],0,'HTTP — протокол, PNG — формат, USB — интерфейс.'],
+['Сложность бинарного поиска?',['O(n)','O(log n)','O(n²)','O(1)'],1,'Каждый шаг делит массив пополам.'],
+['Что такое алгоритм?',['Последовательность шагов для решения задачи','Язык программирования','Тип данных','Вид памяти'],0,'Чёткая конечная инструкция.']]},
+{id:'db',n:'Базы данных',e:'🗄️',l:'Вуз',q:[
+['Какая SQL-команда выбирает данные?',['GET','SELECT','FETCH','PICK'],1,'SELECT … FROM … WHERE.'],
+['Первичный ключ — это…',['Уникальный идентификатор строки','Любой столбец','Пароль к БД','Индекс по тексту'],0,'Значения не повторяются и не NULL.'],
+['Что делает JOIN?',['Удаляет таблицу','Объединяет строки таблиц по условию','Сортирует','Создаёт индекс'],1,'Связывает таблицы по ключам.'],
+['Цель нормализации?',['Ускорить интернет','Уменьшить избыточность данных','Зашифровать данные','Увеличить размер БД'],1,'Убирает дублирование и аномалии.'],
+['Что делает WHERE?',['Фильтрует строки','Сортирует','Группирует','Удаляет таблицу'],0,'Задаёт условие отбора.'],
+['Что означает A в ACID?',['Автономность','Атомарность','Адресность','Актуальность'],1,'Транзакция выполняется целиком или никак.']]},
+{id:'hist',n:'История',e:'🏛️',l:'Школа',q:[
+['Год начала Великой Отечественной войны?',['1939','1941','1943','1945'],1,'22 июня 1941 года.'],
+['Первый космонавт планеты?',['Титов','Леонов','Гагарин','Терешкова'],2,'12 апреля 1961 года.'],
+['Год Крещения Руси?',['862','988','1147','1240'],1,'При князе Владимире.'],
+['Год Куликовской битвы?',['1240','1380','1480','1612'],1,'Победа над войском Мамая.'],
+['Когда отменено крепостное право?',['1801','1825','1861','1905'],2,'Реформа Александра II.'],
+['Кто основал Санкт-Петербург?',['Иван III','Пётр I','Екатерина II','Николай I'],1,'В 1703 году.']]},
+{id:'en',n:'Английский',e:'🇬🇧',l:'Школа',q:[
+['Past Simple от «go»?',['goed','went','gone','goes'],1,'Неправильный глагол: go — went — gone.'],
+['Как переводится «library»?',['Библиотека','Лаборатория','Книжный магазин','Ливрея'],0,'Ложный друг переводчика!'],
+['She ___ to school every day.',['go','goes','going','gone'],1,'3-е лицо ед. числа: +es.'],
+['Множественное число от «child»?',['childs','childes','children','childrens'],2,'Исключение.'],
+['I ___ reading a book now.',['am','is','are','be'],0,'Present Continuous: I am …ing.'],
+['Синоним слова «big»?',['tiny','large','thin','slow'],1,'large = большой.']]},
+{id:'bio',n:'Биология',e:'🧬',l:'Школа',q:[
+['Какой органоид отвечает за фотосинтез?',['Митохондрия','Хлоропласт','Рибосома','Ядро'],1,'Содержит хлорофилл.'],
+['Носитель наследственной информации?',['АТФ','ДНК','Белок','Глюкоза'],1,'Дезоксирибонуклеиновая кислота.'],
+['Сколько хромосом у человека?',['23','44','46','48'],2,'23 пары.'],
+['Что переносит гемоглобин?',['Кислород','Глюкозу','Гормоны','Воду'],0,'Содержится в эритроцитах.'],
+['Какой орган перекачивает кровь?',['Печень','Лёгкие','Сердце','Почки'],2,'Мышечный насос.'],
+['«Энергетическая станция» клетки?',['Лизосома','Митохондрия','Вакуоль','Ядрышко'],1,'Синтез АТФ.']]}];
+const $=s=>document.querySelector(s),A=$('#app');let lvl='Все',cfg={n:6,t:0},T=null;
+const sh=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+const ld=()=>{try{return JSON.parse(localStorage.getItem('sp')||'[]')}catch(e){return[]}};
+const sv=r=>{try{const h=ld();h.unshift(r);localStorage.setItem('sp',JSON.stringify(h.slice(0,50)))}catch(e){}};
+function theme(){const d=document.documentElement,c=d.dataset.theme||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');d.dataset.theme=c=='dark'?'light':'dark'}
+function home(){clearInterval(T);const list=S.filter(s=>lvl=='Все'||s.l==lvl);
+A.innerHTML=`<h2>Проверь себя 🎯</h2><p class="mu">Выбери уровень, предмет и режим. Всё сохраняется в твоём браузере.</p>
+<div class="chips">${['Все','Школа','Вуз'].map(l=>`<button class="chip ${l==lvl?'on':''}" onclick="lvl='${l}';home()">${l}</button>`).join('')}</div>
+<div class="grid">${list.map(s=>`<div class="card sub" onclick="setup('${s.id}')"><div class="e">${s.e}</div><b>${s.n}</b><div class="tag">${s.l} · ${s.q.length} вопросов</div></div>`).join('')}
+<div class="card sub" onclick="setup('all')"><div class="e">🎲</div><b>Марафон</b><div class="tag">Все предметы вперемешку</div></div></div>`}
+function setup(id){const s=S.find(x=>x.id==id),name=s?s.n:'Марафон',max=s?s.q.length:S.reduce((a,x)=>a+x.q.length,0);
+A.innerHTML=`<h2>${s?s.e:'🎲'} ${name}</h2><div class="card">
+<b>Количество вопросов</b><div class="chips">${[5,10,max].filter((v,i,a)=>v<=max&&a.indexOf(v)==i).map(v=>`<button class="chip ${cfg.n==v?'on':''}" onclick="cfg.n=${v};setup('${id}')">${v==max?'Все ('+v+')':v}</button>`).join('')}</div>
+<b>Таймер на вопрос</b><div class="chips">${[[0,'Без таймера'],[15,'15 сек'],[30,'30 сек']].map(([v,l])=>`<button class="chip ${cfg.t==v?'on':''}" onclick="cfg.t=${v};setup('${id}')">${l}</button>`).join('')}</div>
+<div class="row" style="margin-top:14px"><button class="p" onclick="quiz('${id}')">📝 Начать тест</button><button class="p" onclick="cards('${id}')">🃏 Карточки</button><button onclick="home()">← Назад</button></div></div>`}
+const pool=id=>{const s=S.find(x=>x.id==id);return id=='all'?S.flatMap(x=>x.q.map(q=>[...q,x.n])):s.q.map(q=>[...q,s.n])};
+let Q,i,sc,er,st;
+function quiz(id){Q=sh(pool(id)).slice(0,Math.min(cfg.n,pool(id).length)).map(q=>{const c=q[1][q[2]],o=sh(q[1]);return[q[0],o,o.indexOf(c),q[3],q[4]]});i=0;sc=0;er=[];st=Date.now();window.qid=id;qv()}
+function qv(){clearInterval(T);const q=Q[i];let left=cfg.t;
+A.innerHTML=`<div class="row"><span class="mu">Вопрос ${i+1} из ${Q.length}</span>${cfg.t?'<span class="tm" id="tm">⏱ '+left+'</span>':''}</div><div class="bar"><i style="width:${i/Q.length*100}%"></i></div>
+<div class="card"><h3 style="margin-top:0">${q[0]}</h3>${q[1].map((o,k)=>`<button class="opt" onclick="ans(${k})">${o}</button>`).join('')}<div id="ex"></div></div>`;
+if(cfg.t)T=setInterval(()=>{left--;const e=$('#tm');if(e){e.textContent='⏱ '+left;e.className='tm'+(left<=5?' low':'')}if(left<=0)ans(-1)},1000)}
+function ans(k){clearInterval(T);const q=Q[i],b=[...document.querySelectorAll('.opt')];if(b[0].disabled)return;
+b.forEach((x,j)=>{x.disabled=true;if(j==q[2])x.classList.add('ok');else if(j==k)x.classList.add('bad')});
+if(k==q[2])sc++;else er.push([q[0],q[1][q[2]],k<0?'— время вышло —':q[1][k],q[3]]);
+$('#ex').innerHTML=`<p class="mu">💡 ${q[3]}</p><button class="p" onclick="nx()">${i+1<Q.length?'Далее →':'Итоги'}</button>`}
+function nx(){i++;i<Q.length?qv():fin()}
+function fin(){const p=Math.round(sc/Q.length*100),t=Math.round((Date.now()-st)/1000),n=window.qid=='all'?'Марафон':S.find(x=>x.id==window.qid).n;
+sv({n,p,sc,tot:Q.length,t,d:new Date().toLocaleDateString('ru')});
+A.innerHTML=`<div class="card" style="text-align:center"><div class="big">${p}%</div><h3>${p>=80?'Отлично! 🏆':p>=50?'Неплохо, есть куда расти 💪':'Стоит повторить 📚'}</h3><p class="mu">Верно ${sc} из ${Q.length} · время ${t} сек</p>
+<div class="row" style="justify-content:center"><button class="p" onclick="quiz('${window.qid}')">Пройти снова</button><button onclick="cards('${window.qid}')">🃏 Карточки</button><button onclick="home()">На главную</button></div></div>
+${er.length?'<h2>Разбор ошибок</h2>'+er.map(e=>`<div class="card" style="margin-bottom:10px"><b>${e[0]}</b><br><span style="color:var(--bad)">Ваш ответ: ${e[2]}</span><br><span style="color:var(--ok)">Верно: ${e[1]}</span><p class="mu" style="margin:6px 0 0">${e[3]}</p></div>`).join(''):''}`}
+let C,ci,known;
+function cards(id){C=sh(pool(id)).slice(0,cfg.n);ci=0;known=0;window.qid=id;cv()}
+function cv(){if(ci>=C.length){A.innerHTML=`<div class="card" style="text-align:center"><div class="big">${known}/${C.length}</div><h3>Карточек выучено</h3><div class="row" style="justify-content:center"><button class="p" onclick="cards('${window.qid}')">Ещё раз</button><button class="p" onclick="quiz('${window.qid}')">📝 Проверить тестом</button><button onclick="home()">На главную</button></div></div>`;return}
+const c=C[ci];A.innerHTML=`<span class="mu">Карточка ${ci+1} из ${C.length} · ${c[4]}</span><div class="bar"><i style="width:${ci/C.length*100}%"></i></div>
+<div class="flip" id="fl" onclick="this.classList.toggle('f')"><div class="fi"><div class="fc">${c[0]}</div><div class="fc b"><div><b>${c[1][c[2]]}</b><p class="mu">${c[3]}</p></div></div></div></div>
+<p class="mu" style="text-align:center">Нажми на карточку, чтобы перевернуть</p>
+<div class="row" style="justify-content:center"><button onclick="ci++;cv()">🤔 Не знаю</button><button class="p" onclick="known++;ci++;cv()">✅ Знаю</button></div>`}
+function stats(){const h=ld();
+A.innerHTML=`<h2>📊 Моя статистика</h2>`+(h.length?`<div class="card"><p>Пройдено тестов: <b>${h.length}</b> · Средний балл: <b>${Math.round(h.reduce((a,x)=>a+x.p,0)/h.length)}%</b> · Лучший: <b>${Math.max(...h.map(x=>x.p))}%</b></p>
+<div style="overflow-x:auto"><table><tr><th>Дата</th><th>Предмет</th><th>Результат</th><th>Время</th></tr>${h.map(x=>`<tr><td>${x.d}</td><td>${x.n}</td><td>${x.sc}/${x.tot} (${x.p}%)</td><td>${x.t} с</td></tr>`).join('')}</table></div>
+<p><button onclick="try{localStorage.removeItem('sp')}catch(e){};stats()">Очистить историю</button></p></div>`:'<div class="card mu">Пока пусто — пройди первый тест!</div>')+'<p><button onclick="home()">← На главную</button></p>'}
+home();
+</script></body></html>
